@@ -1,21 +1,36 @@
 #cy {
+  margin: 10px;
   width: 500px;
   height: 500px;
   border-style: solid;
   border-width: 2px;
 }
-#vis{
+
+#sentChart {
+  margin: 10px;
   width: 300px;
   height: 473px;
   border-style: solid;
   border-width: 2px;
   overflow: auto;
 }
-#buttons{
+
+#receiveChart {
+  margin: 10px;
+  width: 300px;
+  height: 473px;
+  border-style: solid;
+  border-width: 2px;
+  overflow: auto;
+}
+
+#buttons {
+  margin: 10px;
   width: 300px;
   border-style: solid;
   border-width: 2px;
 }
+
 .cy {
   grid-area: draw;
 }
@@ -24,15 +39,19 @@
   grid-area: butt;
 }
 
-.vis {
-  grid-area: chart;
+.sentChart {
+  grid-area: sentChart;
+}
+
+.receiveChart {
+  grid-area: receiveChart;
 }
 
 .container {
   display: grid;
-  grid-template-columns: 510px 300px;
+  grid-template-columns: 310px 510px 310px;
   grid-template-rows: auto auto;
   grid-template-areas:
-    "draw butt"
-    "draw chart";
+    "receiveChart draw sentChart"
+    "receiveChart draw butt";
 }

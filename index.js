@@ -1,4 +1,4 @@
-var r;
+
 var cy = cytoscape({
   container: document.getElementById("cy"), // container to render in
 
@@ -32,7 +32,8 @@ var cy = cytoscape({
     rows: 1
   }
 });
-var values = [];
+var targetValues = [];
+var sourceValues = [];
 function addNode() {
   if (cy.elements("node").length == 0) {
     cy.add({
@@ -92,16 +93,6 @@ function addConnection() {
     });
     cy.center();
   } else {
-    console.log(
-      parseInt(
-        parseInt(
-          cy
-            .elements("edge")
-            [cy.elements("edge").length - 1].data()
-            .id.replace("e", "")
-        ) + 1
-      )
-    );
     cy.add({
       group: "edges",
       data: {
@@ -120,15 +111,25 @@ function addConnection() {
     });
   }
   cy.center();
-  values.push({
+  targetValues.push({
     a: cy
       .elements("edge")
-      [values.length].target()
+      [targetValues.length].target()
       .id(),
     b: 1
   });
-  vegaEmbed("#vis", vlSpec).then(res =>
-    res.view.insert("myData", values).run()
+  sourceValues.push({
+    a: cy
+      .elements("edge")
+      [sourceValues.length].source()
+      .id(),
+    b: 1
+  });
+  vegaEmbed("#sentChart", sentSpec).then(res =>
+    res.view.insert("myData", targetValues).run()
+  );
+  vegaEmbed("#receiveChart", sourceSpec).then(res =>
+    res.view.insert("myData", sourceValues).run()
   );
 }
 
@@ -136,7 +137,7 @@ function getRandomInt(max) {
   return Math.ceil(Math.random() * Math.floor(max));
 }
 
-var vlSpec = {
+var sentSpec = {
   $schema: "https://vega.github.io/schema/vega-lite/v3.json",
   data: {
     name: "myData"
@@ -161,5 +162,30 @@ var vlSpec = {
     }
   }
 };
+var sourceSpec = {
+    $schema: "https://vega.github.io/schema/vega-lite/v3.json",
+    data: {
+      name: "myData"
+    },
+    mark: "bar",
+    encoding: {
+      y: {
+        field: "a",
+        type: "ordinal",
+        axis: {
+          title: "Node ID"
+        },
+        sort: { op: "sum", field: "b", order: "descending" }
+      },
+      x: {
+        aggregate: "sum",
+        field: "b",
+        type: "quantitative",
+        axis: {
+          title: "Times sent"
+        }
+      }
+    }
+  };
 
 // Embed the visualization in the container with id `vis`
