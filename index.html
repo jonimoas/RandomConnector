@@ -1,0 +1,25 @@
+<html>
+
+<head>
+  <link rel="stylesheet" href="index.css" />
+  <script src="https://cdn.jsdelivr.net/npm/vega@4.3.0/build/vega.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@3.0.0-rc10/build/vega-lite.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@3.24.1/build/vega-embed.js"></script>
+  <title></title>
+</head>
+
+<body>
+  <div class="container">
+    <div id="cy" class="cy"></div>
+    <div id="buttons" class="buttons">
+      <button type="button" onclick="addNode()">Add Point</button>
+      <button type="button" onclick="addConnection()">Add Connection</button>
+    </div>
+    <div id="vis" class="vis"></div>
+  </div>
+  <script src="cytoscape.min.js" lang="javascript"></script>
+  <script src="index.js"></script>
+
+</body>
+
+</html>
