@@ -1,4 +1,3 @@
-
 var cy = cytoscape({
   container: document.getElementById("cy"), // container to render in
 
@@ -11,7 +10,6 @@ var cy = cytoscape({
     {
       selector: "node",
       style: {
-        "background-color": "#666",
         label: "data(id)"
       }
     },
@@ -19,7 +17,7 @@ var cy = cytoscape({
     {
       selector: "edge",
       style: {
-        width: 3,
+        width: 1,
         "line-color": "#ccc",
         "target-arrow-color": "#ccc",
         "target-arrow-shape": "triangle"
@@ -64,7 +62,18 @@ function addNode() {
   }
   cy.center();
 }
-
+function addMany() {
+  var i = 0;
+  while (i <= 1000) {
+    addConnection();
+    i++;
+  }
+  draw();
+}
+function addOne(){
+  addConnection();
+  draw();
+}
 function addConnection() {
   var s = getRandomInt(
     cy.elements("node")[cy.elements("node").length - 1].data().id
@@ -110,7 +119,6 @@ function addConnection() {
       }
     });
   }
-  cy.center();
   targetValues.push({
     a: cy
       .elements("edge")
@@ -125,14 +133,61 @@ function addConnection() {
       .id(),
     b: 1
   });
+  cy.center();
+}
+function draw() {
+
   vegaEmbed("#sentChart", sentSpec).then(res =>
     res.view.insert("myData", targetValues).run()
   );
   vegaEmbed("#receiveChart", sourceSpec).then(res =>
     res.view.insert("myData", sourceValues).run()
   );
-}
+  var i = 1;
 
+  while (i <= cy.elements("node").length) {
+    var sourceCount = 0;
+    for (const s of sourceValues) {
+      if (s.a == i) {
+        sourceCount++;
+      }
+    }
+    var destinationsCount = 0;
+    for (const s of targetValues) {
+      if (s.a == i) {
+        destinationsCount++;
+      }
+    }
+
+    var size = 1;
+    if (sourceCount != 0) {
+      if (destinationsCount != 0) {
+        size = destinationsCount / sourceCount;
+        size = size * 10;
+      } else {
+        size = 1;
+      }
+    } else {
+      size = 30;
+    }
+    var color;
+    if (size <= 10) {
+      color = "#A44";
+    } else {
+      color = "#4A4";
+    }
+    cy.style()
+      .selector("#" + i)
+      .style({
+        width: size,
+        height: size,
+        "background-color": color
+      })
+
+      .update(); // indicate the end of your new stylesheet so that it can be updated on elements
+    i++;
+  }
+}
 function getRandomInt(max) {
   return Math.ceil(Math.random() * Math.floor(max));
 }
@@ -163,29 +218,29 @@ var sentSpec = {
   }
 };
 var sourceSpec = {
-    $schema: "https://vega.github.io/schema/vega-lite/v3.json",
-    data: {
-      name: "myData"
-    },
-    mark: "bar",
-    encoding: {
-      y: {
-        field: "a",
-        type: "ordinal",
-        axis: {
-          title: "Node ID"
-        },
-        sort: { op: "sum", field: "b", order: "descending" }
+  $schema: "https://vega.github.io/schema/vega-lite/v3.json",
+  data: {
+    name: "myData"
+  },
+  mark: "bar",
+  encoding: {
+    y: {
+      field: "a",
+      type: "ordinal",
+      axis: {
+        title: "Node ID"
       },
-      x: {
-        aggregate: "sum",
-        field: "b",
-        type: "quantitative",
-        axis: {
-          title: "Times sent"
-        }
+      sort: { op: "sum", field: "b", order: "descending" }
+    },
+    x: {
+      aggregate: "sum",
+      field: "b",
+      type: "quantitative",
+      axis: {
+        title: "Times sent"
       }
     }
-  };
+  }
+};
 
 // Embed the visualization in the container with id `vis`
