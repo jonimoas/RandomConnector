@@ -32,6 +32,7 @@ var cy = cytoscape({
 });
 var targetValues = [];
 var sourceValues = [];
+var connections = [];
 function addNode() {
   if (cy.elements("node").length == 0) {
     cy.add({
@@ -70,7 +71,7 @@ function addMany() {
   }
   draw();
 }
-function addOne(){
+function addOne() {
   addConnection();
   draw();
 }
@@ -134,15 +135,48 @@ function addConnection() {
     b: 1
   });
   cy.center();
+  let c = connections.find(
+    r =>
+      r.id ==
+      cy
+        .elements("edge")
+        [cy.elements("edge").length - 1].source()
+        .id() +
+        "-" +
+        cy
+          .elements("edge")
+          [cy.elements("edge").length - 1].target()
+          .id()
+  );
+  if (c == undefined) {
+    connections.push({
+      id:
+        cy
+          .elements("edge")
+          [cy.elements("edge").length - 1].source()
+          .id() +
+        "-" +
+        cy
+          .elements("edge")
+          [cy.elements("edge").length - 1].target()
+          .id(),
+      field: 1
+    });
+  } else {
+    c.field = c.field + 1;
+  }
 }
 function draw() {
-
   vegaEmbed("#sentChart", sentSpec).then(res =>
     res.view.insert("myData", targetValues).run()
   );
   vegaEmbed("#receiveChart", sourceSpec).then(res =>
     res.view.insert("myData", sourceValues).run()
   );
+  vegaEmbed("#pie", pieSpec).then(res =>
+    res.view.insert("table", connections).run()
+  );
+  view.update()
   var i = 1;
 
   while (i <= cy.elements("node").length) {
@@ -187,10 +221,103 @@ function draw() {
       .update(); // indicate the end of your new stylesheet so that it can be updated on elements
     i++;
   }
+  console.log(connections);
 }
 function getRandomInt(max) {
   return Math.ceil(Math.random() * Math.floor(max));
 }
+var pieSpec = {
+  $schema: "https://vega.github.io/schema/vega/v4.json",
+  width: 200,
+  height: 400,
+  autosize: "none",
+
+  signals: [
+    {
+      name: "startAngle",
+      value: 6.29
+    },
+    {
+      name: "endAngle",
+      value: 3.14
+    },
+    {
+      name: "padAngle",
+      value: 0
+    },
+    {
+      name: "innerRadius",
+      value: 0
+    },
+    {
+      name: "cornerRadius",
+      value: 0
+    },
+    {
+      name: "sort",
+      value: true
+    }
+  ],
+
+  data: [
+    {
+      name: "table",
+      transform: [
+        {
+          type: "pie",
+          field: "field",
+          startAngle: { signal: "startAngle" },
+          endAngle: { signal: "endAngle" },
+          sort: { signal: "sort" }
+        }
+      ]
+    }
+  ],
+
+  scales: [
+    {
+      name: "color",
+      type: "ordinal",
+      domain: { data: "table", field: "id" },
+      range: { scheme: "category20" }
+    }
+  ],
+
+  marks: [
+    {
+      type: "arc",
+      from: { data: "table" },
+      encode: {
+        enter: {
+          fill: { scale: "color", field: "id" },
+          x: { signal: "width / 2" },
+          y: { signal: "height / 2" }
+        },
+        update: {
+          startAngle: { field: "startAngle" },
+          endAngle: { field: "endAngle" },
+          padAngle: { signal: "padAngle" },
+          innerRadius: { signal: "innerRadius" },
+          outerRadius: { signal: "width / 2" },
+          cornerRadius: { signal: "cornerRadius" }
+        }
+      }
+    }
+  ],
+  legends: [
+    {
+      orient: "top-right",
+      fill: "color",
+      title: "Connections",
+      properties: {
+        symbols: {
+          fillOpacity: { value: 0.5 },
+          stroke: { value: "transparent" }
+        }
+      }
+    }
+  ]
+};
 
 var sentSpec = {
   $schema: "https://vega.github.io/schema/vega-lite/v3.json",
@@ -242,5 +369,3 @@ var sourceSpec = {
     }
   }
 };
-
-// Embed the visualization in the container with id `vis`

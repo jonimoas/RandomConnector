@@ -1,7 +1,7 @@
 #cy {
   margin: 10px;
-  width: 500px;
-  height: 500px;
+  width: 400px;
+  height: 400px;
   border-style: solid;
   border-width: 2px;
 }
@@ -9,7 +9,7 @@
 #sentChart {
   margin: 10px;
   width: 300px;
-  height: 500px;
+  height: 400px;
   border-style: solid;
   border-width: 2px;
   overflow: auto;
@@ -18,7 +18,16 @@
 #receiveChart {
   margin: 10px;
   width: 300px;
-  height: 500px;
+  height: 400px;
+  border-style: solid;
+  border-width: 2px;
+  overflow: auto;
+}
+
+#pie {
+  margin: 10px;
+  width: 200px;
+  height: 400px;
   border-style: solid;
   border-width: 2px;
   overflow: auto;
@@ -29,14 +38,15 @@
   width: 295px;
   border-style: solid;
   border-width: 2px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  padding-left:5px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 4px;
 }
 
 .cy {
   grid-area: draw;
 }
+
 
 .buttons {
   grid-area: butt;
@@ -50,11 +60,19 @@
   grid-area: receiveChart;
 }
 
+.vega-actions {
+  display: none
+}
+
+.pie {
+  grid-area: pie;
+}
+
 .container {
   display: grid;
-  grid-template-columns: 310px 510px 310px;
+  grid-template-columns: 310px 410px 310px 200px;
   grid-template-rows: auto auto;
   grid-template-areas:
-    "receiveChart draw sentChart"
-    "receiveChart draw butt";
+    "receiveChart draw sentChart pie"
+    "receiveChart draw butt pie";
 }
