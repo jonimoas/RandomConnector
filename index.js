@@ -176,7 +176,6 @@ function draw() {
   vegaEmbed("#pie", pieSpec).then(res =>
     res.view.insert("table", connections).run()
   );
-  view.update()
   var i = 1;
 
   while (i <= cy.elements("node").length) {
